@@ -136,8 +136,11 @@
         success: function (data) {
           document.getElementById('score').innerHTML = "("+ data.scoreBike +")";
           var s = Math.floor(data.scoreBike);
-          var temp = "star"+s;
-          document.getElementById(temp).style.backgroundColor="#F90"
+          for (var i = 1; i <= s ; i++) {
+            var temp = "star"+i;
+            document.getElementById(temp).style.backgroundColor="#F90"
+          }
+
           // var d = document.getElementById(s);
           // d.className += "checked";
 
