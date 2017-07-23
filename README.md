@@ -16,4 +16,4 @@ Ubike 車況回報平台
 
 
 ## 後記
-特別感謝tommy770221大大的carry
+特別感謝 @tommy770221 大大的carry
