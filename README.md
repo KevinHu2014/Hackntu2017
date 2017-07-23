@@ -1,7 +1,7 @@
 # Ubike 壞壞
 Ubike 車況回報平台
 
-![demo](url-to-image)
+![demo](https://github.com/KevinHu2014/Hackntu2017/blob/master/images/demo.png)
 
 你是否也有一樣的困擾， 常常在租借Ubike時，需要花不少時間在檢查車況。
 
@@ -11,7 +11,7 @@ Ubike 車況回報平台
 
 ## 架構圖
 
-![架構](url-to-image)
+![架構](https://github.com/KevinHu2014/Hackntu2017/blob/master/images/structure.png)
 
 
 
