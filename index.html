@@ -1,0 +1,193 @@
+<!--
+ Copyright 2016 Google Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="canonical" href="https://weather-pwa-sample.firebaseapp.com/final/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ubike 壞壞</title>
+  <link rel="stylesheet" type="text/css" href="styles/inline.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- bootstrap -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <!-- TODO add manifest here -->
+  <link rel="manifest" href="/manifest.json">
+  <!-- Add to home screen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Ubike 壞壞">
+  <link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
+  <meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+  <meta name="msapplication-TileColor" content="#2F3BA2">
+</head>
+<body>
+
+  <header class="header">
+    <h1 class="header__title">Ubike 壞壞</h1>
+    <!-- <button id="butRefresh" class="headerButton" aria-label="Refresh"></button> -->
+    <button id="butInfo" class="headerButton" aria-label="Info"></button>
+  </header>
+
+  <main class="main">
+    <div class="row">
+      <div class="col-xs-2 col-md-2 col-lg-2"></div>
+      <div class="col-xs-8 col-md-8 col-lg-8 center-block">
+        <img src="/images/ubike.jpg" class="img-responsive center-block" alt="ubike" class="img-rounded">
+      </div>
+      <div class="col-xs-2 col-md-2 col-lg-2"></div>
+    </div>
+    <div class="row">
+      <div class=class="col-xs-2 col-md-2 col-lg-2"></div>
+      <div class="col-xs-8 col-md-8 col-lg-8 center-block">
+        <blockquote id="word" class="blockquote-reverse">
+          <p>Ubike也有身分證</p>
+          <footer>聯合報 <cite title="Source Title">新北報導</cite></footer>
+        </blockquote>
+      </div>
+      <div class="col-xs-2 col-md-2 col-lg-2"></div>
+    </div>
+    <div id="upload" class="row">
+      <div class="col-xs-3"></div>
+      <div class="col-xs-6 center-block">
+        <form  method="post"
+          action="https://tommy770221.com/NTUHack/addBike"
+          enctype="multipart/form-data" id="fileUploadForm">
+          <label class="cameraButton btn-primary">掃描Ubike編號
+            <input id="upload-file-input" type="file" accept="image/*;capture=camera"
+               name="file">
+          </label>
+          <p></p>
+
+          <input class="btn btn-success" id="btnSubmit" value="提交" type="submit" onclick="submitform(event)">
+
+        </form>
+      </div>
+      <div class="col-xs-3"></div>
+    </div>
+    <div id="loading" class="row" style="visibility: hidden">
+      <div class="col-xs-3"></div>
+      <div class="col-xs-6 center-block">
+        <div class="loader">
+          <svg viewBox="0 0 32 32" width="32" height="32">
+            <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+          </svg>
+        </div>
+      </div>
+      <div class="col-xs-3"></div>
+    </div>
+    <div id="content" class="row " style="visibility: hidden">
+      <div class="col-xs-3"></div>
+      <div class="col-xs-3 center-block">
+      <button onclick="correct()" class="btn btn-success center-block">正確</button>
+      </div>
+      <div class="col-xs-3 center-block">
+      <button onclick="wrong()" class="btn btn-warning center-block">重新辨識</button>
+      </div>
+      <div class="col-xs-3"></div>
+    </div>
+
+
+  </main>
+  <script language="javascript" type="text/javascript">
+  var id = null;
+  var bikeId = null;
+
+  function correct() {
+    location.href="score.html?"+id+"&"+bikeId;
+  }
+
+  function wrong() {
+    location.reload();
+  }
+
+  function submitform(e) {
+    e.preventDefault();
+
+
+    // Get form
+    var form = $('#fileUploadForm')[0];
+    console.log(form);
+    var data = new FormData(form);
+
+    data.append("CustomField", "This is some extra data, testing");
+    document.getElementById('loading').style.visibility = 'visible';
+    document.getElementById('upload').style.visibility = 'hidden';
+
+    $("#btnSubmit").prop("disabled", true);
+
+    $.ajax({
+        type: "POST",
+        enctype: 'multipart/form-data',
+        url: "https://tommy770221.com/NTUHack/addBike",
+        data: data,
+        //http://api.jquery.com/jQuery.ajax/
+        //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+        processData: false, //prevent jQuery from automatically transforming the data into a query string
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+
+            $("#result").text(data);
+            console.log("SUCCESS : ", data.bikeName.replace("Ubike", " "));
+            id = data.id;
+            bikeId = data.bikeName.replace("Ubike", " ");
+            document.getElementById('loading').style.visibility = 'hidden';
+            document.getElementById('content').style.visibility = 'visible';
+            document.getElementById('word').innerHTML = "編號是"+data.bikeName.replace("Ubike", " ")+"嗎？";
+            // location.href="score.html?a=b&b=c&c=d";
+
+        },
+        error: function (e) {
+
+            $("#result").text(e.responseText);
+            console.log("ERROR : ", e);
+
+        }
+    });
+    return false;
+  };
+  </script>
+  <!-- <main class="main">
+    <form action="http://foo.com" method="post">
+      <label class="cameraButton">掃描Ubike編號
+        <input type="file" accept="image/*;capture=camera">
+      </label>
+    </form>
+  </main> -->
+
+  <!-- <div class="loader">
+    <svg viewBox="0 0 32 32" width="32" height="32">
+      <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+    </svg>
+  </div> -->
+
+  <!-- Uncomment the line below when ready to test with fake data -->
+  <script src="scripts/app.js" async></script>
+
+</body>
+</html>
